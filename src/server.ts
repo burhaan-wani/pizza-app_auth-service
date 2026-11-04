@@ -1,24 +1,28 @@
 import "dotenv/config";
+
 import { app } from "./app.js";
-import { env } from "./config/env.config.js";
-import logger from "./config/logger.config.js";
 
-const PORT = env.PORT;
-
+const PORT = process.env.PORT;
 const server = app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
+	console.log(`API running at http://localhost:${PORT}`);
 });
 
-process.on("uncaughtException", (err) => {
-  logger.fatal(err, "uncaught exception detected");
-  server.close(() => {
-    process.exit(1);
-  });
+const gracefulShutdown = (signal: string) => {
+	console.log(`Received ${signal}. Starting graceful shutdown...`);
 
-  // If a graceful shutdown is not achieved after 1 second,
-  // shut down the process completely
-  setTimeout(() => {
-    process.abort();
-  }, 1000).unref();
-  process.exit(1);
-});
+	server.close(() => {
+		console.log("HTTP server closed successfully.");
+		process.exit(0);
+	});
+
+	setTimeout(() => {
+		console.error(
+			"Could not close connections in time, forcefully shutting down",
+		);
+		process.exit(1);
+	}, 10000);
+};
+
+process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
+
+process.on("SIGINT", () => gracefulShutdown("SIGINT"));
