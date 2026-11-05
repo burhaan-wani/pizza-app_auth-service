@@ -1,22 +1,23 @@
 import "dotenv/config";
 
 import { app } from "./app.js";
+import logger from "./config/logger.js";
 
 const PORT = process.env.PORT;
 const server = app.listen(PORT, () => {
-	console.log(`API running at http://localhost:${PORT}`);
+	logger.info(`API running at http://localhost:${PORT}`);
 });
 
 const gracefulShutdown = (signal: string) => {
-	console.log(`Received ${signal}. Starting graceful shutdown...`);
+	logger.info(`Received ${signal}. Starting graceful shutdown...`);
 
 	server.close(() => {
-		console.log("HTTP server closed successfully.");
+		logger.info("HTTP server closed successfully.");
 		process.exit(0);
 	});
 
 	setTimeout(() => {
-		console.error(
+		logger.error(
 			"Could not close connections in time, forcefully shutting down",
 		);
 		process.exit(1);
