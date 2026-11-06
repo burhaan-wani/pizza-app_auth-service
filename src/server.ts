@@ -1,9 +1,10 @@
 import "dotenv/config";
 
 import { app } from "./app.js";
+import { env } from "./config/env.js";
 import logger from "./config/logger.js";
 
-const PORT = process.env.PORT;
+const PORT = env.PORT;
 const server = app.listen(PORT, () => {
 	logger.info(`API running at http://localhost:${PORT}`);
 });
