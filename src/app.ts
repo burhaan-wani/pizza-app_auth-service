@@ -3,6 +3,8 @@ import express from "express";
 
 import type { HttpError } from "http-errors";
 
+import authRoutes from "./routes/auth.routes.js";
+
 export const app: Application = express();
 
 app.use("/health", (_, res) => {
@@ -11,6 +13,10 @@ app.use("/health", (_, res) => {
 	});
 });
 
+// Routes
+app.use("/api/v1/auth", authRoutes);
+
+// Error-Handler
 app.use((error: HttpError, _: Request, res: Response, __: NextFunction) => {
 	const statusCode = error.statusCode || 500;
 
